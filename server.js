@@ -1,4 +1,18 @@
 require('dotenv').config();
+
+// Log startup info
+console.log('='.repeat(60));
+console.log('🚀 STARTING GAD AMA GADO BACKEND SERVER');
+console.log('='.repeat(60));
+console.log('📊 Environment Check:');
+console.log('  - NODE_ENV:', process.env.NODE_ENV || 'NOT SET');
+console.log('  - PORT:', process.env.PORT || 'NOT SET');
+console.log('  - MONGODB_URI:', process.env.MONGODB_URI ? 'SET ✅' : 'NOT SET ❌');
+console.log('  - JWT_SECRET:', process.env.JWT_SECRET ? 'SET ✅' : 'NOT SET ❌');
+console.log('  - JWT_EXPIRE:', process.env.JWT_EXPIRE || 'NOT SET');
+console.log('  - CORS_ORIGIN:', process.env.CORS_ORIGIN || 'NOT SET');
+console.log('='.repeat(60));
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
