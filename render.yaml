@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: gorgor-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE
+        value: 30d
+      - key: CORS_ORIGIN
+        value: https://gorgor-exchange.onrender.com,http://localhost:19006
+      - key: MONGODB_URI
+        sync: false
