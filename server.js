@@ -1,5 +1,11 @@
 require('dotenv').config();
 
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+
 // Log startup info
 console.log('='.repeat(60));
 console.log('🚀 STARTING GAD AMA GADO BACKEND SERVER');
@@ -8,16 +14,29 @@ console.log('📊 Environment Check:');
 console.log('  - NODE_ENV:', process.env.NODE_ENV || 'NOT SET');
 console.log('  - PORT:', process.env.PORT || 'NOT SET');
 console.log('  - MONGODB_URI:', process.env.MONGODB_URI ? 'SET ✅' : 'NOT SET ❌');
-console.log('  - JWT_SECRET:', process.env.JWT_SECRET ? 'SET ✅' : 'NOT SET ❌');
-console.log('  - JWT_EXPIRE:', process.env.JWT_EXPIRE || 'NOT SET');
+console.log('  - SESSION_SECRET:', process.env.SESSION_SECRET ? 'SET ✅' : 'NOT SET ❌');
 console.log('  - CORS_ORIGIN:', process.env.CORS_ORIGIN || 'NOT SET');
 console.log('='.repeat(60));
 
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-
 const app = express();
+
+// Session Configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'gorgor-marketplace-secret-key-2024',
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+    collectionName: 'sessions',
+    ttl: 14 * 24 * 60 * 60 // 14 days
+  }),
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
+    sameSite: 'lax'
+  }
+}));
 
 // Middleware - CORS with flexible configuration
 const allowedOrigins = process.env.CORS_ORIGIN 

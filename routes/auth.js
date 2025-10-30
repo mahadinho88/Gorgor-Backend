@@ -1,14 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-
-// Generate JWT Token
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE
-  });
-};
 
 // @route   POST /api/v1/auth/register
 // @desc    Register a new user
@@ -44,12 +36,12 @@ router.post('/register', async (req, res) => {
       district
     });
 
-    // Generate token
-    const token = generateToken(user._id);
+    // Set session
+    req.session.userId = user._id;
 
     res.status(201).json({
       success: true,
-      token,
+      message: 'Registration successful',
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -103,12 +95,12 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Generate token
-    const token = generateToken(user._id);
+    // Set session
+    req.session.userId = user._id;
 
     res.json({
       success: true,
-      token,
+      message: 'Login successful',
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -133,10 +125,37 @@ router.post('/login', async (req, res) => {
 // @desc    Logout user
 // @access  Private
 router.post('/logout', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Logged out successfully'
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: 'Logout failed'
+      });
+    }
+    res.clearCookie('connect.sid');
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
   });
+});
+
+// @route   GET /api/v1/auth/status
+// @desc    Check authentication status
+// @access  Public
+router.get('/status', (req, res) => {
+  if (req.session && req.session.userId) {
+    res.json({
+      success: true,
+      authenticated: true,
+      userId: req.session.userId
+    });
+  } else {
+    res.json({
+      success: true,
+      authenticated: false
+    });
+  }
 });
 
 module.exports = router;
