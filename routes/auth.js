@@ -136,13 +136,29 @@ router.post('/login', async (req, res) => {
     // For web users (use session)
     if (req.session) {
       req.session.userId = user._id;
+      // Explicitly save the session
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({
+            success: false,
+            message: 'Login failed'
+          });
+        }
+        
+        res.json({
+          success: true,
+          message: 'Login successful',
+          user: userData
+        });
+      });
+    } else {
+      res.json({
+        success: true,
+        message: 'Login successful',
+        user: userData
+      });
     }
-
-    res.json({
-      success: true,
-      message: 'Login successful',
-      user: userData
-    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({
@@ -160,19 +176,32 @@ router.post('/logout', (req, res) => {
   if (req.session) {
     req.session.destroy((err) => {
       if (err) {
+        console.error('Session destroy error:', err);
         return res.status(500).json({
           success: false,
           message: 'Logout failed'
         });
       }
-      res.clearCookie('connect.sid');
+      
+      // Clear the session cookie
+      res.clearCookie('connect.sid', {
+        path: '/',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+      });
+      
+      res.json({
+        success: true,
+        message: 'Logged out successfully'
+      });
+    });
+  } else {
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
     });
   }
-
-  res.json({
-    success: true,
-    message: 'Logged out successfully'
-  });
 });
 
 // @route   GET /api/v1/auth/status
