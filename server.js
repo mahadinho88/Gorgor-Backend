@@ -15,6 +15,8 @@ console.log('  - NODE_ENV:', process.env.NODE_ENV || 'NOT SET');
 console.log('  - PORT:', process.env.PORT || 'NOT SET');
 console.log('  - MONGODB_URI:', process.env.MONGODB_URI ? 'SET ✅' : 'NOT SET ❌');
 console.log('  - SESSION_SECRET:', process.env.SESSION_SECRET ? 'SET ✅' : 'NOT SET ❌');
+console.log('  - JWT_SECRET:', process.env.JWT_SECRET ? 'SET ✅' : 'NOT SET ❌');
+console.log('  - JWT_EXPIRE:', process.env.JWT_EXPIRE || 'NOT SET');
 console.log('  - CORS_ORIGIN:', process.env.CORS_ORIGIN || 'NOT SET');
 console.log('='.repeat(60));
 
