@@ -19,11 +19,49 @@ const cors = require('cors');
 
 const app = express();
 
-// Middleware
+// Middleware - CORS with flexible configuration
+const allowedOrigins = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : [];
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',') || '*',
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    // Allow all origins if CORS_ORIGIN is not set (development)
+    if (allowedOrigins.length === 0) return callback(null, true);
+    
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      return callback(null, true);
+    }
+    
+    // Allow localhost and file:// for development
+    if (origin.startsWith('http://localhost') || 
+        origin.startsWith('http://127.0.0.1') || 
+        origin.startsWith('file://')) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'Expires']
 }));
+// Log CORS configuration
+console.log('🔒 CORS Configuration:');
+if (allowedOrigins.length > 0) {
+  console.log('  - Allowed Origins:', allowedOrigins.join(', '));
+} else {
+  console.log('  - Mode: Allow All Origins (Development)');
+}
+console.log('  - Credentials: Enabled');
+console.log('  - File Protocol: Allowed');
+console.log('  - Localhost: Allowed');
+console.log('='.repeat(60));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
