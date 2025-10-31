@@ -145,27 +145,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Diagnostic endpoint to check current configuration
-app.get('/diagnostic', (req, res) => {
-  const allowedOrigins = process.env.CORS_ORIGIN 
-    ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
-    : [];
-    
-  res.json({
-    success: true,
-    diagnostic: {
-      nodeEnv: process.env.NODE_ENV || 'not set',
-      corsOrigin: process.env.CORS_ORIGIN || 'not set',
-      allowedOrigins: allowedOrigins,
-      sessionSecret: process.env.SESSION_SECRET ? 'SET ✅' : 'NOT SET ❌',
-      jwtSecret: process.env.JWT_SECRET ? 'SET ✅' : 'NOT SET ❌',
-      hasSession: !!req.session,
-      sessionId: req.session ? req.session.id : null,
-      sessionCookieConfig: req.session ? req.session.cookie : null
-    }
-  });
-});
-
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({
