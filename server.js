@@ -8,7 +8,7 @@ const MongoStore = require('connect-mongo');
 
 // Log startup info
 console.log('='.repeat(60));
-console.log('🚀 STARTING GAD AMA GADO BACKEND SERVER v2.1');
+console.log('🚀 STARTING GAD AMA GADO BACKEND SERVER v2.2');
 console.log('='.repeat(60));
 console.log('📊 Environment Check:');
 console.log('  - NODE_ENV:', process.env.NODE_ENV || 'NOT SET');
