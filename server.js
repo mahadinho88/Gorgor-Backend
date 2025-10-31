@@ -82,6 +82,28 @@ if (allowedOrigins.length > 0) {
 console.log('  - Credentials: Enabled');
 console.log('  - File Protocol: Allowed');
 console.log('  - Localhost: Allowed');
+
+// Add a temporary endpoint to check CORS configuration
+app.get('/cors-check', (req, res) => {
+  const allowedOrigins = process.env.CORS_ORIGIN 
+    ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+    : [];
+    
+  res.json({
+    allowedOrigins: allowedOrigins,
+    origin: req.get('Origin'),
+    isAllowed: allowedOrigins.length === 0 || 
+               allowedOrigins.includes(req.get('Origin')) || 
+               allowedOrigins.includes('*') ||
+               (req.get('Origin') && (
+                 req.get('Origin').startsWith('http://localhost') || 
+                 req.get('Origin').startsWith('http://127.0.0.1') || 
+                 req.get('Origin').startsWith('file://') ||
+                 req.get('Origin') === 'https://gorgor-marketplace.vercel.app'
+               ))
+  });
+});
+
 console.log('='.repeat(60));
 
 app.use(express.json());
